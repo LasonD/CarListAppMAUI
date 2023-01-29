@@ -1,7 +1,6 @@
 ﻿namespace CarListApp.Models;
 
-internal class CarMart
+internal class CarMart : EntityBase
 {
-    public int Id { get; set; }
     public List<Car> Cars { get; set; }
 }
