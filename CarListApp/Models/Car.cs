@@ -1,6 +1,6 @@
 ﻿namespace CarListApp.Models
 {
-    internal class Car : EntityBase
+    public class Car : EntityBase
     {
         public string Brand { get; set; }
         public string Model { get; set; }

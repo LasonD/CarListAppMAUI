@@ -3,10 +3,12 @@ using System.Collections.Immutable;
 
 namespace CarListApp.Services
 {
-    internal class CarService
+    public class CarService
     {
-        public IImmutableList<Car> GetCars()
+        public async Task<IImmutableList<Car>> GetCarsAsync()
         {
+            await Task.Delay(1000);
+
             return new List<Car>()
             {
                 new Car

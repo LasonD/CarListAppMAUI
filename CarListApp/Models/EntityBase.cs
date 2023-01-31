@@ -1,6 +1,6 @@
 ﻿namespace CarListApp.Models
 {
-    internal abstract class EntityBase
+    public abstract class EntityBase
     {
         public int Id { get; set; }
     }
