@@ -11,15 +11,13 @@ namespace CarListApp.ViewModels
     public partial class CarListViewModel : ViewModelBase
     {
         private const string CarListTitle = "Car list";
-        private readonly CarService _carService;
 
         [ObservableProperty]
         private bool _isRefreshing;
 
-        public CarListViewModel(CarService carService)
+        public CarListViewModel()
         {
             Title = CarListTitle;
-            _carService = carService;
         }
 
         public ObservableCollection<Car> Cars { get; private set; } = new();
@@ -35,7 +33,7 @@ namespace CarListApp.ViewModels
             try
             {
                 IsLoading = true;
-                var cars = await _carService.GetCarsAsync();
+                var cars = await App.CarService.GetCarsAsync();
 
                 foreach (var car in cars)
                 {

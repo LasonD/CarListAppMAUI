@@ -6,6 +6,8 @@ namespace CarListApp;
 
 public static class MauiProgram
 {
+    private const string DbFileName = "cars.db3";
+
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
@@ -17,7 +19,9 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-        builder.Services.AddTransient<CarService>();
+        var dbPath = Path.Combine(FileSystem.AppDataDirectory, DbFileName);
+
+        builder.Services.AddTransient(_ => new CarService(dbPath));
 
         builder.Services.AddTransient<CarListViewModel>();
         builder.Services.AddTransient<CarDetailsViewModel>();
