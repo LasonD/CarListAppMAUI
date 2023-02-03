@@ -21,7 +21,7 @@ public static class MauiProgram
 
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, DbFileName);
 
-        builder.Services.AddTransient(_ => new CarService(dbPath));
+        builder.Services.AddTransient(_ => new CarService(dbPath).Init());
 
         builder.Services.AddTransient<CarListViewModel>();
         builder.Services.AddTransient<CarDetailsViewModel>();

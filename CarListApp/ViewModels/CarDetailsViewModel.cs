@@ -3,15 +3,19 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CarListApp.ViewModels
 {
-    [QueryProperty(nameof(Car), nameof(Car))]
-    public partial class CarDetailsViewModel : ViewModelBase
+    [QueryProperty(nameof(Id), nameof(Id))]
+    public partial class CarDetailsViewModel : ViewModelBase, IQueryAttributable
     {
+        [ObservableProperty]
+        private int _id;
+
         [ObservableProperty]
         private Car _car;
 
-        public CarDetailsViewModel()
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            // Title = $"{Car.Brand} {Car.Model}";
+            Id = Convert.ToInt32(query[nameof(Id)]);
+            Car = App.CarService.GetById(Id);
         }
     }
 }

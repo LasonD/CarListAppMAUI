@@ -7,31 +7,85 @@
              Title="{Binding Title}"
              x:Class="CarListApp.MainPage">
 
-    <Grid ColumnDefinitions="*, *" ColumnSpacing="5" RowDefinitions="*, Auto">
+    <Grid ColumnSpacing="1" RowSpacing="1" Padding="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <RefreshView Grid.ColumnSpan="2"
+        <VerticalStackLayout Padding="5" Grid.Row="0" Margin="9">
+            <Entry x:Name="Brand" Placeholder="Enter brand" Text="{Binding Brand}"/>
+            <Entry x:Name="Model" Placeholder="Enter model" Text="{Binding Model}"/>
+            <Entry x:Name="Vin" Placeholder="Enter VIN" Text="{Binding Vin}"/>
+        </VerticalStackLayout>
+
+        <Button Text="Add Car" Grid.Row="1" IsEnabled="{Binding IsNotLoading}"
+                Command="{Binding AddCarCommand}" Margin="9"/>
+
+        <Button Text="Fetch Cars" Command="{Binding GetCarsCommand}" IsEnabled="{Binding IsNotLoading}" Margin="9" Grid.Row="2"/>
+
+        <RefreshView Grid.Row="4"
                      Command="{Binding GetCarsCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
+
             <CollectionView ItemsSource="{Binding Cars}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:Car">
-                        <Grid Padding="10">
-                            <Frame HeightRequest="90" BackgroundColor="Azure">
+                        <Grid Padding="10" ColumnDefinitions="*, auto">
+                            <Frame BackgroundColor="DarkGrey" HeightRequest="70" Grid.Column="0">
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=OpenCarDetailsCommand}" CommandParameter="{Binding .}"/>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=OpenCarDetailsCommand}"
+                                                          CommandParameter="{Binding Id}"/>
                                 </Frame.GestureRecognizers>
-                                <HorizontalStackLayout Padding="10" Spacing="5">
-                                    <Label Text="{Binding Brand}" TextColor="MidnightBlue"></Label>
-                                    <Label Text="{Binding Model}" TextColor="MidnightBlue"></Label>
+                                <HorizontalStackLayout>
+                                    <Label Text="{Binding Brand}"/>
+                                    <Label Text="{Binding Model}"/>
                                 </HorizontalStackLayout>
                             </Frame>
+                            <HorizontalStackLayout Grid.Column="1">
+                                <Button Text="Delete" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=DeleteCarCommand}"
+                                        CommandParameter="{Binding Id}"/>
+                            </HorizontalStackLayout>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
         </RefreshView>
 
-        <Button Text="Fetch Cars" Command="{Binding GetCarsCommand}" IsEnabled="{Binding IsNotLoading}" Grid.Row="1" Margin="10" Grid.ColumnSpan="2"/>
     </Grid>
+
+    <!-- <Grid ColumnDefinitions="*, *" ColumnSpacing="5" RowDefinitions="*, Auto"> -->
+    <!-- -->
+    <!--     <RefreshView Grid.ColumnSpan="2" -->
+    <!--                  Command="{Binding GetCarsCommand}" -->
+    <!--                  IsRefreshing="{Binding IsRefreshing}"> -->
+    <!--         <CollectionView ItemsSource="{Binding Cars}" SelectionMode="None"> -->
+    <!--             <CollectionView.ItemTemplate> -->
+    <!--                 <DataTemplate x:DataType="model:Car"> -->
+    <!--                     <Grid Padding="10"> -->
+    <!--                         <Frame HeightRequest="90" BackgroundColor="Azure"> -->
+    <!--                             <Frame.GestureRecognizers> -->
+    <!--                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=OpenCarDetailsCommand}" CommandParameter="{Binding .}"/> -->
+    <!--                             </Frame.GestureRecognizers> -->
+    <!--                             <HorizontalStackLayout Padding="10" Spacing="5"> -->
+    <!--                                 <Label Text="{Binding Brand}" TextColor="MidnightBlue"></Label> -->
+    <!--                                 <Label Text="{Binding Model}" TextColor="MidnightBlue"></Label> -->
+    <!--                             </HorizontalStackLayout> -->
+    <!--                         </Frame> -->
+    <!--                     </Grid> -->
+    <!--                 </DataTemplate> -->
+    <!--             </CollectionView.ItemTemplate> -->
+    <!--         </CollectionView> -->
+    <!--     </RefreshView> -->
+    <!-- -->
+    <!--     <Button Text="Fetch Cars" Command="{Binding GetCarsCommand}" IsEnabled="{Binding IsNotLoading}" Grid.Row="1" Margin="10" Grid.ColumnSpan="2"/> -->
+    <!-- </Grid> -->
 
 </ContentPage>

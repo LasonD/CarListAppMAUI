@@ -1,12 +1,11 @@
 ﻿using CarListApp.Models;
 using SQLite;
-using System.Collections.Immutable;
 
 namespace CarListApp.Services
 {
     public class CarService
     {
-        private string _dbPath;
+        private readonly string _dbPath;
         private SQLiteConnection _connection;
 
         public CarService(string dbPath)
@@ -14,46 +13,37 @@ namespace CarListApp.Services
             _dbPath = dbPath;
         }
 
-        private void Init()
+        public CarService Init()
         {
             if (_connection != null)
             {
-                return;
+                return this;
             }
 
             _connection = new SQLiteConnection(_dbPath);
             _connection.CreateTable<Car>();
+
+            return this;
         }
 
-        public Task<IEnumerable<Car>> GetCarsAsync()
+        public IEnumerable<Car> GetCars()
         {
-            Init();
-            return Task.FromResult(_connection.Table<Car>().ToList().AsEnumerable());
+            return _connection.Table<Car>().ToList();
+        }
 
-            // return new List<Car>()
-            // {
-            //     new Car
-            //     {
-            //         Id = 1,
-            //         Brand = "BMW",
-            //         Model = "M3",
-            //         Vin = Guid.NewGuid().ToString(),
-            //     },
-            //     new Car
-            //     {
-            //         Id = 2,
-            //         Brand = "Audi",
-            //         Model = "A4 B8",
-            //         Vin = Guid.NewGuid().ToString(),
-            //     },
-            //     new Car
-            //     {
-            //         Id = 3,
-            //         Brand = "Alfa Romeo",
-            //         Model = "Brera",
-            //         Vin = Guid.NewGuid().ToString(),
-            //     },
-            // }.ToImmutableList();
+        public Car GetById(int id)
+        {
+            return _connection.Table<Car>().SingleOrDefault(c => c.Id == id);
+        }
+
+        public int DeleteCar(int id)
+        {
+            return _connection.Delete<Car>(id);
+        }
+
+        public void AddCar(Car car)
+        {
+            _connection.Insert(car);
         }
     }
 }

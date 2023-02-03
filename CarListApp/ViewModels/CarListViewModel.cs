@@ -1,73 +1,139 @@
-﻿using CarListApp.Services;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CarListApp.Models;
 using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Text;
 using CarListApp.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace CarListApp.ViewModels
+namespace CarListApp.ViewModels;
+
+public partial class CarListViewModel : ViewModelBase
 {
-    public partial class CarListViewModel : ViewModelBase
+    private const string CarListTitle = "Car list";
+
+    [ObservableProperty] private bool _isRefreshing;
+
+    [ObservableProperty] private string _brand;
+
+    [ObservableProperty] private string _model;
+
+    [ObservableProperty] private string _vin;
+
+    public CarListViewModel()
     {
-        private const string CarListTitle = "Car list";
+        Title = CarListTitle;
+    }
 
-        [ObservableProperty]
-        private bool _isRefreshing;
+    public ObservableCollection<Car> Cars { get; private set; } = new();
 
-        public CarListViewModel()
+    [RelayCommand]
+    public async Task GetCarsAsync()
+    {
+        if (IsLoading)
         {
-            Title = CarListTitle;
+            return;
         }
 
-        public ObservableCollection<Car> Cars { get; private set; } = new();
-
-        [RelayCommand]
-        public async Task GetCarsAsync()
+        try
         {
-            if (IsLoading)
+            Cars.Clear();
+            IsLoading = true;
+            var cars = App.CarService.GetCars();
+
+            foreach (var car in cars)
             {
-                return;
+                Cars.Add(car);
             }
 
-            try
-            {
-                IsLoading = true;
-                var cars = await App.CarService.GetCarsAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            await Shell.Current.DisplayAlert("Error", $"Failed to retrieve the list of cars: {ex.Message}.", "Close");
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+            IsRefreshing = false;
+        }
+    }
 
-                foreach (var car in cars)
-                {
-                    Cars.Add(car);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                await Shell.Current.DisplayAlert("Error", $"Failed to retrieve the list of cars: {ex.Message}.", "Close");
-                throw;
-            }
-            finally
-            {
-                IsLoading = false;
-                IsRefreshing = false;
-            }
+    [RelayCommand]
+    public async Task AddCarAsync()
+    {
+        if (!IsValidCar(out var message))
+        {
+            await Shell.Current.DisplayAlert("Error", $"Cannot create a car: {message}", "Ok");
+            return;
         }
 
-        [RelayCommand]
-        public async Task OpenCarDetailsAsync(Car car)
+        var car = new Car()
         {
-            if (car == null)
-            {
-                await Shell.Current.DisplayAlert("Error", "No car specified.", "Close");
-            }
+            Brand = Brand,
+            Model = Model,
+            Vin = Vin,
+        };
 
-            await Shell.Current.GoToAsync(nameof(CarDetailsPage), true, new Dictionary<string, object>()
-            {
-                {
-                    nameof(Car), car
-                }
-            });
+        try
+        {
+            App.CarService.AddCar(car);
         }
+        catch (Exception e)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Something went wrong while adding a car: {e.Message}", "Ok");
+        }
+
+        await GetCarsAsync();
+    }
+
+    [RelayCommand]
+    public async Task DeleteCarAsync(int id)
+    {
+        try
+        {
+            var carsDeletedCount = App.CarService.DeleteCar(id);
+        }
+        catch (Exception e)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Something went wrong while deleting a car: {e.Message}", "Ok");
+        }
+
+        await GetCarsAsync();
+    }
+
+    [RelayCommand]
+    public async Task OpenCarDetailsAsync(int id)
+    {
+        await Shell.Current.GoToAsync(nameof(CarDetailsPage), true, new Dictionary<string, object>()
+        {
+            {
+                nameof(Car.Id), id
+            }
+        });
+    }
+
+    private bool IsValidCar(out string message)
+    {
+        var errorBuilder = new StringBuilder();
+
+        if (string.IsNullOrWhiteSpace(Brand))
+        {
+            errorBuilder.Append("Car brand cannot be empty.");
+        }
+
+        if (string.IsNullOrWhiteSpace(Model))
+        {
+            errorBuilder.Append("Car model cannot be empty. ");
+        }
+
+        if (string.IsNullOrWhiteSpace(Vin))
+        {
+            errorBuilder.Append("Car VIN cannot be empty. ");
+        }
+
+        message = errorBuilder.ToString();
+        return string.IsNullOrWhiteSpace(message);
     }
 }
