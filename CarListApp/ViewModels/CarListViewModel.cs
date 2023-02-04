@@ -11,6 +11,8 @@ namespace CarListApp.ViewModels;
 public partial class CarListViewModel : ViewModelBase
 {
     private const string CarListTitle = "Car list";
+    private const string AddCarText = "Add Car";
+    private const string UpdateCarText = "Update Car";
 
     [ObservableProperty] private bool _isRefreshing;
 
@@ -20,9 +22,14 @@ public partial class CarListViewModel : ViewModelBase
 
     [ObservableProperty] private string _vin;
 
+    [ObservableProperty] private int? _editedCarId;
+
+    [ObservableProperty] private string _addUpdateCarBtnText;
+
     public CarListViewModel()
     {
         Title = CarListTitle;
+        AddUpdateCarBtnText = AddCarText;
     }
 
     public ObservableCollection<Car> Cars { get; private set; } = new();
@@ -61,11 +68,11 @@ public partial class CarListViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public async Task AddCarAsync()
+    public async Task AddUpdateCarAsync()
     {
         if (!IsValidCar(out var message))
         {
-            await Shell.Current.DisplayAlert("Error", $"Cannot create a car: {message}", "Ok");
+            await Shell.Current.DisplayAlert("Error", $"Cannot create or update a car: {message}", "Ok");
             return;
         }
 
@@ -78,7 +85,14 @@ public partial class CarListViewModel : ViewModelBase
 
         try
         {
-            App.CarService.AddCar(car);
+            if (EditedCarId != null)
+            {
+                var updatedCount = App.CarService.UpdateCar(EditedCarId.Value, car);
+            }
+            else
+            {
+                var insertedCount = App.CarService.AddCar(car);
+            }
         }
         catch (Exception e)
         {
@@ -86,6 +100,35 @@ public partial class CarListViewModel : ViewModelBase
         }
 
         await GetCarsAsync();
+    }
+
+    [RelayCommand]
+    public async Task EditCarAsync(int id)
+    {
+        if (id == EditedCarId)
+        {
+            Brand = null;
+            Model = null;
+            Vin = null;
+            EditedCarId = null;
+            AddUpdateCarBtnText = AddCarText;
+            return;
+        }
+
+        AddUpdateCarBtnText = UpdateCarText;
+        EditedCarId = id;
+
+        var car = Cars.FirstOrDefault(c => c.Id == id);
+
+        if (car == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "Car not found. Try refreshing the list", "Ok");
+            return;
+        }
+
+        Brand = car.Brand;
+        Model = car.Model;
+        Vin = car.Vin;
     }
 
     [RelayCommand]

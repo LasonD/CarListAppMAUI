@@ -25,19 +25,20 @@
             <Entry x:Name="Vin" Placeholder="Enter VIN" Text="{Binding Vin}"/>
         </VerticalStackLayout>
 
-        <Button Text="Add Car" Grid.Row="1" IsEnabled="{Binding IsNotLoading}"
-                Command="{Binding AddCarCommand}" Margin="9"/>
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <Button Text="{Binding AddUpdateCarBtnText}" IsEnabled="{Binding IsNotLoading}" Command="{Binding AddUpdateCarCommand}" Margin="5" Grid.Column="0"/>
 
-        <Button Text="Fetch Cars" Command="{Binding GetCarsCommand}" IsEnabled="{Binding IsNotLoading}" Margin="9" Grid.Row="2"/>
+            <Button Text="Fetch Cars" Command="{Binding GetCarsCommand}" IsEnabled="{Binding IsNotLoading}" Margin="5" Grid.Column="1"/>
+        </Grid>
 
         <RefreshView Grid.Row="4"
                      Command="{Binding GetCarsCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
 
-            <CollectionView ItemsSource="{Binding Cars}" SelectionMode="None">
+            <CollectionView ItemsSource="{Binding Cars}" SelectionMode="Single">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:Car">
-                        <Grid Padding="10" ColumnDefinitions="*, auto">
+                        <Grid Padding="5" ColumnDefinitions="*, auto">
                             <Frame BackgroundColor="DarkGrey" HeightRequest="70" Grid.Column="0">
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=OpenCarDetailsCommand}"
@@ -45,10 +46,12 @@
                                 </Frame.GestureRecognizers>
                                 <HorizontalStackLayout>
                                     <Label Text="{Binding Brand}"/>
-                                    <Label Text="{Binding Model}"/>
+                                    <Label Text="{Binding Model}" Padding="5,0,0,0"/>
                                 </HorizontalStackLayout>
                             </Frame>
-                            <HorizontalStackLayout Grid.Column="1">
+                            <HorizontalStackLayout Grid.Column="1" Padding="5,0">
+                                <Button Text="Edit"  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=EditCarCommand}"
+                                        CommandParameter="{Binding Id}"/>
                                 <Button Text="Delete" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=DeleteCarCommand}"
                                         CommandParameter="{Binding Id}"/>
                             </HorizontalStackLayout>

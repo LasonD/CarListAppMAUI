@@ -41,9 +41,15 @@ namespace CarListApp.Services
             return _connection.Delete<Car>(id);
         }
 
-        public void AddCar(Car car)
+        public int AddCar(Car car)
         {
-            _connection.Insert(car);
+            return _connection.Insert(car);
+        }
+
+        public int UpdateCar(int id, Car car)
+        {
+            car.Id = id;
+            return _connection.Update(car);
         }
     }
 }
