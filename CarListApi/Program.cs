@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
@@ -12,6 +14,10 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod()
     );
 });
+
+var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carList.db");
+var connection = new SqliteConnection($"Data Source={dbPath}");
+builder.Services.AddDbContext<CarListDbContext>(options => options.UseSqlite(connection));
 
 var app = builder.Build();
 
@@ -25,28 +31,62 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-var summaries = new[]
+app.MapGet("/cars", async (CarListDbContext dbContext) => await dbContext.Cars.ToListAsync());
+app.MapGet("/cars/{id:int}", async (int id, CarListDbContext dbContext) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var car = await dbContext.Cars.FindAsync(id);
 
-app.MapGet("/weatherforecast", () =>
+    if (car == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(car);
+});
+
+app.MapPost("/cars", async ([FromBody] Car postPayload, CarListDbContext dbContext) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    await dbContext.AddAsync(postPayload);
+
+    await dbContext.SaveChangesAsync();
+
+    return Results.Created($"/cars/{postPayload.Id}", postPayload);
+});
+
+app.MapPut("/cars/{id:int}", async (int id, [FromBody] Car updatePayload, CarListDbContext dbContext) =>
+{
+    var car = await dbContext.Cars.FindAsync(id);
+
+    if (car == null)
+    {
+        return Results.NotFound();
+    }
+
+    car.Brand= updatePayload.Brand;
+    car.Model = updatePayload.Model;
+    car.Vin = updatePayload.Vin;
+
+    dbContext.Update(car);
+
+    await dbContext.SaveChangesAsync();
+
+    return Results.Ok(car);
+});
+
+app.MapDelete("/cars/{id:int}", async (int id, CarListDbContext dbContext) =>
+{
+    var car = dbContext.Cars.Find(id);
+
+    if (car == null)
+    {
+        return Results.NotFound();
+    }
+
+    dbContext.Cars.Remove(car);
+
+    await dbContext.SaveChangesAsync();
+
+    return Results.Ok(car);
+});
 
 app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
