@@ -15,21 +15,18 @@ builder.Services.AddCors(options =>
     );
 });
 
-var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carList.db");
-var connection = new SqliteConnection($"Data Source={dbPath}");
+var connection = new SqliteConnection(@$"Data Source=C:\CarListDb\carList.db");
 builder.Services.AddDbContext<CarListDbContext>(options => options.UseSqlite(connection));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+
+app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
 app.MapGet("/cars", async (CarListDbContext dbContext) => await dbContext.Cars.ToListAsync());
 app.MapGet("/cars/{id:int}", async (int id, CarListDbContext dbContext) =>
