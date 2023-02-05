@@ -49,7 +49,17 @@ public partial class CarListViewModel : ViewModelBase
         {
             Cars.Clear();
             IsLoading = true;
-            var cars = await _carApiService.GetCarsAsync(); //App.CarService.GetCars();
+
+            IEnumerable<Car> cars;
+
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            {
+                cars = await _carApiService.GetCarsAsync();
+            }
+            else
+            {
+                cars = App.CarService.GetCars();
+            }
 
             foreach (var car in cars)
             {
@@ -88,13 +98,27 @@ public partial class CarListViewModel : ViewModelBase
 
         try
         {
-            if (EditedCarId != null)
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
             {
-                var updatedCount = App.CarService.UpdateCar(EditedCarId.Value, car);
+                if (EditedCarId != null)
+                {
+                    var updatedCount = await _carApiService.UpdateCarAsync(EditedCarId.Value, car);
+                }
+                else
+                {
+                    var insertedCount = await _carApiService.AddCarAsync(car);
+                }
             }
             else
             {
-                var insertedCount = App.CarService.AddCar(car);
+                if (EditedCarId != null)
+                {
+                    var updatedCount = App.CarService.UpdateCar(EditedCarId.Value, car);
+                }
+                else
+                {
+                    var insertedCount = App.CarService.AddCar(car);
+                }
             }
         }
         catch (Exception e)
@@ -139,7 +163,14 @@ public partial class CarListViewModel : ViewModelBase
     {
         try
         {
-            var carsDeletedCount = App.CarService.DeleteCar(id);
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            {
+                var carsDeletedCount = App.CarService.DeleteCar(id);
+            }
+            else
+            {
+                var carsDeletedCount = await _carApiService.DeleteCarAsync(id);
+            }
         }
         catch (Exception e)
         {

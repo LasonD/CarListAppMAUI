@@ -1,13 +1,14 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using CarListApp.Models;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace CarListApp.Services
 {
     public class CarApiService
     {
-        public static string BaseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:85" : "http://localhost:85";
+        public static string BaseAddress = "https://car-list-api.onrender.com/";
         private readonly HttpClient _httpClient;
 
         public CarApiService()
@@ -26,7 +27,7 @@ namespace CarListApp.Services
 
             var contentString =  await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<IEnumerable<Car>>(contentString);
+            return JsonConvert.DeserializeObject<IEnumerable<Car>>(contentString);
         }
 
         public async Task<Car> GetCarAsync(int id)

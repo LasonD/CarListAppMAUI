@@ -49,11 +49,11 @@
                                     <Label Text="{Binding Model}" Padding="5,0,0,0"/>
                                 </HorizontalStackLayout>
                             </Frame>
-                            <HorizontalStackLayout Grid.Column="1" Padding="5,0">
+                            <HorizontalStackLayout Grid.Column="1">
                                 <Button Text="Edit"  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=EditCarCommand}"
-                                        CommandParameter="{Binding Id}"/>
+                                        CommandParameter="{Binding Id}" Margin="9"/>
                                 <Button Text="Delete" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CarListViewModel}}, Path=DeleteCarCommand}"
-                                        CommandParameter="{Binding Id}"/>
+                                        CommandParameter="{Binding Id}" Margin="9"/>
                             </HorizontalStackLayout>
                         </Grid>
                     </DataTemplate>
