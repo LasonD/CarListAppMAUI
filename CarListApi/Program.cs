@@ -15,7 +15,8 @@ builder.Services.AddCors(options =>
     );
 });
 
-var connection = new SqliteConnection(@$"Data Source=C:\CarListDb\carList.db");
+var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "carList.db");
+var connection = new SqliteConnection(@$"Data Source={dbPath}");
 builder.Services.AddDbContext<CarListDbContext>(options => options.UseSqlite(connection));
 
 var app = builder.Build();
