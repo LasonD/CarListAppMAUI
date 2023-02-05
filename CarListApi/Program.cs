@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,10 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod()
     );
 });
+
+builder.Services.AddIdentityCore<IdentityUser>()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<CarListDbContext>();
 
 var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "carList.db");
 var connection = new SqliteConnection(@$"Data Source={dbPath}");
@@ -87,4 +92,42 @@ app.MapDelete("/cars/{id:int}", async (int id, CarListDbContext dbContext) =>
     return Results.Ok(car);
 });
 
+app.MapPost("/login", async (LoginDto loginDto, UserManager<IdentityUser> userManager) =>
+{
+    var user = await userManager.FindByNameAsync(loginDto.Username);
+
+    if (user == null)
+    {
+        return Results.BadRequest();
+    }
+
+    var isValidPassword = await userManager.CheckPasswordAsync(user, loginDto.Password);
+
+    if (!isValidPassword)
+    {
+        return Results.BadRequest();
+    }
+
+    var response = new AuthResponseDto()
+    {
+        UserId = user.Id,
+        Username= user.UserName,
+    };
+
+    return Results.Ok(response);
+}); 
+
 app.Run();
+
+public class LoginDto
+{
+    public string Username { get; set; }
+    public string Password { get; set; }
+}
+
+public class AuthResponseDto
+{
+    public string UserId { get; set; }
+    public string Username { get; set; }
+    public string AccessToken { get; set; }
+}
