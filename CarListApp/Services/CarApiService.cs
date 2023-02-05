@@ -38,7 +38,7 @@ namespace CarListApp.Services
 
             var contentString = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<Car>(contentString);
+            return JsonConvert.DeserializeObject<Car>(contentString);
         }
 
         public async Task<bool> AddCarAsync(Car car)

@@ -26,11 +26,11 @@ namespace CarListApp.ViewModels
 
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
             {
-                Car = App.CarService.GetById(Id);
+                Car = await _carApiService.GetCarAsync(Id);
             }
             else
             {
-                Car = await _carApiService.GetCarAsync(Id);
+                Car = App.CarService.GetById(Id);
             }
         }
     }
