@@ -4,9 +4,9 @@ namespace CarListApp;
 
 public partial class LoadingPage : ContentPage
 {
-	public LoadingPage(LoadingPageViewModel loadingPageViewModel)
+	public LoadingPage(LoadingViewModel loadingViewModel)
 	{
 		InitializeComponent();
-		BindingContext = loadingPageViewModel;
+		BindingContext = loadingViewModel;
 	}
 }

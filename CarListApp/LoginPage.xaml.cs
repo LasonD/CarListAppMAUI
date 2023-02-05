@@ -4,9 +4,9 @@ namespace CarListApp;
 
 public partial class LoginPage : ContentPage
 {
-	public LoginPage(LoginPageViewModel loginPageViewModel)
+	public LoginPage(LoginViewModel loginViewModel)
 	{
 		InitializeComponent();
-        BindingContext = loginPageViewModel;
+        BindingContext = loginViewModel;
     }
 }

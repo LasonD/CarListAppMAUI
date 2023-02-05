@@ -1,10 +1,10 @@
 ﻿namespace CarListApp.ViewModels;
 
-public partial class LoadingPageViewModel : ViewModelBase
+public partial class LoadingViewModel : ViewModelBase
 {
     private const string TokenKey = "token";
 
-    public LoadingPageViewModel()
+    public LoadingViewModel()
     {
         CheckUserLoginDetails();
     }
