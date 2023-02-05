@@ -5,11 +5,13 @@ using System.Diagnostics;
 using System.Text;
 using CarListApp.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CarListApp.Services;
 
 namespace CarListApp.ViewModels;
 
 public partial class CarListViewModel : ViewModelBase
 {
+    private readonly CarApiService _carApiService;
     private const string CarListTitle = "Car list";
     private const string AddCarText = "Add Car";
     private const string UpdateCarText = "Update Car";
@@ -26,8 +28,9 @@ public partial class CarListViewModel : ViewModelBase
 
     [ObservableProperty] private string _addUpdateCarBtnText;
 
-    public CarListViewModel()
+    public CarListViewModel(CarApiService carApiService)
     {
+        _carApiService = carApiService;
         Title = CarListTitle;
         AddUpdateCarBtnText = AddCarText;
     }
@@ -46,7 +49,7 @@ public partial class CarListViewModel : ViewModelBase
         {
             Cars.Clear();
             IsLoading = true;
-            var cars = App.CarService.GetCars();
+            var cars = await _carApiService.GetCarsAsync(); //App.CarService.GetCars();
 
             foreach (var car in cars)
             {
