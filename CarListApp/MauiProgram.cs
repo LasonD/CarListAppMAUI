@@ -25,9 +25,13 @@ public static class MauiProgram
         builder.Services.AddTransient<CarApiService>();
 
         builder.Services.AddTransient<CarListViewModel>();
+        builder.Services.AddTransient<LoadingPageViewModel>();
+        builder.Services.AddTransient<LoginPageViewModel>();
         builder.Services.AddTransient<CarDetailsViewModel>();
 
         builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<LoadingPage>();
+        builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<CarDetailsPage>();
 
 		return builder.Build();
