@@ -1,7 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,30 @@ builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CarListDbContext>();
 
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
 var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "carList.db");
 var connection = new SqliteConnection(@$"Data Source={dbPath}");
 builder.Services.AddDbContext<CarListDbContext>(options => options.UseSqlite(connection));
@@ -30,11 +58,16 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseCors("AllowAll");
 
 app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
 app.MapGet("/cars", async (CarListDbContext dbContext) => await dbContext.Cars.ToListAsync());
+
 app.MapGet("/cars/{id:int}", async (int id, CarListDbContext dbContext) =>
 {
     var car = await dbContext.Cars.FindAsync(id);
@@ -65,7 +98,7 @@ app.MapPut("/cars/{id:int}", async (int id, [FromBody] Car updatePayload, CarLis
         return Results.NotFound();
     }
 
-    car.Brand= updatePayload.Brand;
+    car.Brand = updatePayload.Brand;
     car.Model = updatePayload.Model;
     car.Vin = updatePayload.Vin;
 
@@ -111,11 +144,11 @@ app.MapPost("/login", async (LoginDto loginDto, UserManager<IdentityUser> userMa
     var response = new AuthResponseDto()
     {
         UserId = user.Id,
-        Username= user.UserName,
+        Username = user.UserName,
     };
 
     return Results.Ok(response);
-}); 
+});
 
 app.Run();
 
