@@ -6,6 +6,7 @@ using System.Text;
 using CarListApp.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CarListApp.Services;
+using CarListApp.Services.Api;
 
 namespace CarListApp.ViewModels;
 

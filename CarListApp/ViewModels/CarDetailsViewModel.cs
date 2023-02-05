@@ -1,5 +1,6 @@
 ﻿using CarListApp.Models;
 using CarListApp.Services;
+using CarListApp.Services.Api;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CarListApp.ViewModels
