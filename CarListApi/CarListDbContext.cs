@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -83,6 +84,63 @@ public class CarListDbContext : IdentityDbContext
                 Brand = "Mazda",
                 Model = "MX-5",
                 Vin = Guid.NewGuid().ToString(),
+            }
+        );
+
+        var roles = new IdentityRole[]
+        {
+            new IdentityRole()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Administrator",
+                NormalizedName = "Administrator".ToUpperInvariant(),
+            },
+            new IdentityRole()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "User",
+                NormalizedName = "User".ToUpperInvariant(),
+            }
+        };
+
+        modelBuilder.Entity<IdentityRole>().HasData(roles);
+
+        var hasher = new PasswordHasher<IdentityUser>();
+
+        var users = new IdentityUser[]
+        {
+            new IdentityUser()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = "admin@localhost.com",
+                NormalizedEmail = "admin@localhost.com".ToUpperInvariant(),
+                NormalizedUserName = "admin@localhost.com".ToUpperInvariant(),
+                PasswordHash = hasher.HashPassword(null, "P@assword1"),
+                EmailConfirmed = true,
+            },
+            new IdentityUser()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = "user@localhost.com",
+                NormalizedEmail = "user@localhost.com".ToUpperInvariant(),
+                NormalizedUserName = "user@localhost.com".ToUpperInvariant(),
+                PasswordHash = hasher.HashPassword(null, "P@assword11323"),
+                EmailConfirmed = true,
+            }
+        };
+
+        modelBuilder.Entity<IdentityUser>().HasData(users);
+
+        modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>()
+            {
+                RoleId = roles[0].Id,
+                UserId = users[0].Id,
+            },
+            new IdentityUserRole<string>()
+            {
+                RoleId = roles[1].Id,
+                UserId = users[1].Id,
             }
         );
     }
