@@ -20,10 +20,18 @@ namespace CarListApp.ViewModels
             _carApiService = carApiService;
         }
 
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             Id = Convert.ToInt32(query[nameof(Id)]);
-            Car = App.CarService.GetById(Id);
+
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            {
+                Car = App.CarService.GetById(Id);
+            }
+            else
+            {
+                Car = await _carApiService.GetCarAsync(Id);
+            }
         }
     }
 }
