@@ -1,11 +1,13 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -141,10 +143,35 @@ app.MapPost("/login", async (LoginDto loginDto, UserManager<IdentityUser> userMa
         return Results.BadRequest();
     }
 
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]));
+    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var roles = await userManager.GetRolesAsync(user);
+    var claims = await userManager.GetClaimsAsync(user);
+    var tokenClaims = new List<Claim>()
+        {
+            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+        }
+        .Union(claims)
+        .Union(roles.Select(r => new Claim(ClaimTypes.Role, r)))
+        .ToList();
+
+    var token = new JwtSecurityToken(
+        issuer: builder.Configuration["JwtSettings:Issuer"],
+        audience: builder.Configuration["JwtSettings:Audience"],
+        claims: tokenClaims,
+        expires: DateTime.UtcNow.AddMinutes(int.Parse(builder.Configuration["JwtSettings:DurationMinutes"])),
+        signingCredentials: credentials
+    );
+
+    var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
+
     var response = new AuthResponseDto()
     {
         UserId = user.Id,
         Username = user.UserName,
+        AccessToken = tokenStr,
     };
 
     return Results.Ok(response);
