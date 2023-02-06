@@ -1,19 +1,22 @@
-﻿namespace CarListApp.ViewModels;
+﻿using CarListApp.Services.Api;
+
+namespace CarListApp.ViewModels;
 
 public partial class LoadingViewModel : ViewModelBase
 {
-    private const string TokenKey = "token";
+    private readonly TokenManager _tokenManager;
 
-    public LoadingViewModel()
+    public LoadingViewModel(TokenManager tokenManager)
     {
+        _tokenManager = tokenManager;
         CheckUserLoginDetails();
     }
 
     private async void CheckUserLoginDetails()
     {
-        var token = await SecureStorage.GetAsync(TokenKey);
+        var token = await _tokenManager.GetTokenAsync();
 
-        if (string.IsNullOrWhiteSpace(token))
+        if (token == null || string.IsNullOrWhiteSpace(token))
         {
             await Shell.Current.GoToAsync(nameof(LoginPage));
             return;

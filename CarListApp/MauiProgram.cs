@@ -24,6 +24,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient(_ => new CarService(dbPath).Init());
         builder.Services.AddTransient<CarApiService>();
+        builder.Services.AddTransient<TokenManager>();
 
         builder.Services.AddTransient<CarListViewModel>();
         builder.Services.AddTransient<LoadingViewModel>();

@@ -6,17 +6,6 @@ namespace CarListApp.Services.Api;
 
 public class CarApiService : ApiServiceBase
 {
-    public static string BaseAddress = "https://car-list-api.onrender.com/";
-    private readonly HttpClient _httpClient;
-
-    public CarApiService()
-    {
-        _httpClient= new HttpClient()
-        {
-            BaseAddress = new Uri(BaseAddress)
-        };
-    }
-
     public Task<IEnumerable<Car>> GetCarsAsync()
     {
         return GetFromJsonAsync<IEnumerable<Car>>("cars");
@@ -29,7 +18,7 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> AddCarAsync(Car car)
     {
-        var response = await _httpClient.PostAsJsonAsync("cars", car);
+        var response = await HttpClient.PostAsJsonAsync("cars", car);
 
         switch (response.StatusCode)
         {
@@ -45,7 +34,7 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> UpdateCarAsync(int id, Car car)
     {
-        var response = await _httpClient.PutAsJsonAsync($"cars/{id}", car);
+        var response = await HttpClient.PutAsJsonAsync($"cars/{id}", car);
 
         switch (response.StatusCode)
         {
@@ -61,7 +50,7 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> DeleteCarAsync(int id)
     {
-        var response = await _httpClient.DeleteAsync($"cars/{id}");
+        var response = await HttpClient.DeleteAsync($"cars/{id}");
 
         switch (response.StatusCode)
         {

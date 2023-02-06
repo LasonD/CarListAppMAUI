@@ -5,6 +5,10 @@ namespace CarListApp.Services.Api;
 
 public class AuthService : ApiServiceBase
 {
+    public AuthService(TokenManager tokenManager) : base(tokenManager)
+    {
+    }
+
     public async Task<AuthData> Login(string username, string password)
     {
         var response = await HttpClient.PostAsJsonAsync("/login", new { Username = username, Password = password });
