@@ -175,7 +175,7 @@ app.MapPost("/login", async (LoginDto loginDto, UserManager<IdentityUser> userMa
     };
 
     return Results.Ok(response);
-});
+}).AllowAnonymous();
 
 app.Run();
 
