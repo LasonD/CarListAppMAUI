@@ -16,7 +16,7 @@ public partial class LoadingViewModel : ViewModelBase
     {
         var token = await _tokenManager.GetTokenAsync();
 
-        if (token == null || string.IsNullOrWhiteSpace(token))
+        if (token == null || string.IsNullOrWhiteSpace(token.AccessToken))
         {
             await Shell.Current.GoToAsync(nameof(LoginPage));
             return;
