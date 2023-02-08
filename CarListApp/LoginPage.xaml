@@ -12,7 +12,7 @@
 
         <VerticalStackLayout Spacing="5">
             <Label Text="Welcome!" FontSize="28" TextColor="Gray" HorizontalTextAlignment="Center"/>
-            <Label Text="LoginAsync to your account" FontSize="18" TextColor="Gray" HorizontalTextAlignment="Center"/>
+            <Label Text="Login to your account" FontSize="18" TextColor="Gray" HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
 
         <StackLayout Orientation="Horizontal">

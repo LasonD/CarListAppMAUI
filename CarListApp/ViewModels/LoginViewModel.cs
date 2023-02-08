@@ -24,6 +24,7 @@ public partial class LoginViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
         {
             await DisplayLoginErrorAsync();
+            Password = null;
             return;
         }
 
@@ -35,7 +36,14 @@ public partial class LoginViewModel : ViewModelBase
         catch
         {
             await DisplayLoginErrorAsync();
+            ClearForm();
         }
+    }
+
+    private void ClearForm()
+    {
+        Username = null;
+        Password = null;
     }
 
     private async Task DisplayLoginErrorAsync()
