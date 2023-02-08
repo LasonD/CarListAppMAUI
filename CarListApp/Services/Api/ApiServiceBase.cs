@@ -7,11 +7,9 @@ namespace CarListApp.Services.Api
         public static string BaseAddress = "https://car-list-api.onrender.com/";
 
         protected readonly HttpClient HttpClient;
-        protected readonly PersistedTokenManager PersistedTokenManager;
 
-        protected ApiServiceBase(PersistedTokenManager persistedTokenManager)
+        protected ApiServiceBase()
         {
-            PersistedTokenManager = persistedTokenManager;
             HttpClient = new HttpClient()
             {
                 BaseAddress = new Uri(BaseAddress)

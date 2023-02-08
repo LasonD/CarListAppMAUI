@@ -7,13 +7,15 @@ namespace CarListApp.ViewModels;
 public partial class LoginViewModel : ViewModelBase
 {
     private readonly AuthApiService _authService;
+    private readonly PersistedTokenManager _tokenManager;
 
     [ObservableProperty] private string _username;
     [ObservableProperty] private string _password;
 
-    public LoginViewModel(AuthApiService authService)
+    public LoginViewModel(AuthApiService authService, PersistedTokenManager tokenManager)
     {
         _authService = authService;
+        _tokenManager = tokenManager;
     }
 
     [RelayCommand]
@@ -25,7 +27,15 @@ public partial class LoginViewModel : ViewModelBase
             return;
         }
 
-
+        try
+        {
+            var token = await _authService.LoginAsync(Username, Password);
+            await _tokenManager.SetTokenAsync(token);
+        }
+        catch
+        {
+            await DisplayLoginErrorAsync();
+        }
     }
 
     private async Task DisplayLoginErrorAsync()

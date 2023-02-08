@@ -5,7 +5,7 @@ namespace CarListApp.Services.Api;
 
 public class AuthApiService : ApiServiceBase
 {
-    public AuthApiService(PersistedTokenManager persistedTokenManager) : base(persistedTokenManager)
+    public AuthApiService()
     {
     }
 
@@ -18,8 +18,6 @@ public class AuthApiService : ApiServiceBase
         var responseString = await response.Content.ReadAsStringAsync();
 
         var authData = JsonConvert.DeserializeObject<AuthData>(responseString);
-
-        await PersistedTokenManager.SetTokenAsync(authData);
 
         return authData;
     }
