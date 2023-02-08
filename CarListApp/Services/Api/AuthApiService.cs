@@ -3,9 +3,9 @@ using System.Net.Http.Json;
 
 namespace CarListApp.Services.Api;
 
-public class AuthService : ApiServiceBase
+public class AuthApiService : ApiServiceBase
 {
-    public AuthService(TokenManager tokenManager) : base(tokenManager)
+    public AuthApiService(PersistedTokenManager persistedTokenManager) : base(persistedTokenManager)
     {
     }
 
@@ -17,7 +17,11 @@ public class AuthService : ApiServiceBase
 
         var responseString = await response.Content.ReadAsStringAsync();
 
-        return JsonConvert.DeserializeObject<AuthData>(responseString);
+        var authData = JsonConvert.DeserializeObject<AuthData>(responseString);
+
+        await PersistedTokenManager.SetTokenAsync(authData);
+
+        return authData;
     }
 }
 

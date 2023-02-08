@@ -6,6 +6,10 @@ namespace CarListApp.Services.Api;
 
 public class CarApiService : ApiServiceBase
 {
+    public CarApiService(PersistedTokenManager persistedTokenManager) : base(persistedTokenManager)
+    {
+    }
+
     public Task<IEnumerable<Car>> GetCarsAsync()
     {
         return GetFromJsonAsync<IEnumerable<Car>>("cars");
@@ -18,6 +22,8 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> AddCarAsync(Car car)
     {
+        await SetInitialTokenTask;
+
         var response = await HttpClient.PostAsJsonAsync("cars", car);
 
         switch (response.StatusCode)
@@ -34,6 +40,8 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> UpdateCarAsync(int id, Car car)
     {
+        await SetInitialTokenTask;
+
         var response = await HttpClient.PutAsJsonAsync($"cars/{id}", car);
 
         switch (response.StatusCode)
@@ -50,6 +58,8 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> DeleteCarAsync(int id)
     {
+        await SetInitialTokenTask;
+
         var response = await HttpClient.DeleteAsync($"cars/{id}");
 
         switch (response.StatusCode)

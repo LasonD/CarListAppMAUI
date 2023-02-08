@@ -2,7 +2,7 @@
 
 namespace CarListApp.Services.Api
 {
-    public class TokenManager
+    public class PersistedTokenManager
     {
         private const string TokenKey = "Token";
 
@@ -10,7 +10,6 @@ namespace CarListApp.Services.Api
 
         public async Task SetTokenAsync(AuthData authData)
         {
-
             await SecureStorage.SetAsync(TokenKey, JsonConvert.SerializeObject(authData));
             TokenObtained?.Invoke(this, authData);
         }

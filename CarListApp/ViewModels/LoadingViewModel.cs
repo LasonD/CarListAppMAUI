@@ -4,19 +4,19 @@ namespace CarListApp.ViewModels;
 
 public partial class LoadingViewModel : ViewModelBase
 {
-    private readonly TokenManager _tokenManager;
+    private readonly PersistedTokenManager _persistedTokenManager;
 
-    public LoadingViewModel(TokenManager tokenManager)
+    public LoadingViewModel(PersistedTokenManager persistedTokenManager)
     {
-        _tokenManager = tokenManager;
+        _persistedTokenManager = persistedTokenManager;
         CheckUserLoginDetails();
     }
 
     private async void CheckUserLoginDetails()
     {
-        var token = await _tokenManager.GetTokenAsync();
+        var token = await _persistedTokenManager.GetTokenAsync();
 
-        if (token == null || string.IsNullOrWhiteSpace(token.AccessToken))
+        if (token == null)
         {
             await Shell.Current.GoToAsync(nameof(LoginPage));
             return;
