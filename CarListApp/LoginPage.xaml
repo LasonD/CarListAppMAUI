@@ -5,14 +5,14 @@
              xmlns:viewmodel="clr-namespace:CarListApp.ViewModels"
              x:DataType="viewmodel:LoginViewModel"
              Shell.NavBarIsVisible="False"
-             Title="Login">
+             Title="LoginAsync">
     <VerticalStackLayout Spacing="25" Padding="30,0" VerticalOptions="Center">
 
         <Image Source="Images/focus.png" Margin="50,0,0,0"/>
 
         <VerticalStackLayout Spacing="5">
             <Label Text="Welcome!" FontSize="28" TextColor="Gray" HorizontalTextAlignment="Center"/>
-            <Label Text="Login to your account" FontSize="18" TextColor="Gray" HorizontalTextAlignment="Center"/>
+            <Label Text="LoginAsync to your account" FontSize="18" TextColor="Gray" HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
 
         <StackLayout Orientation="Horizontal">

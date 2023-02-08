@@ -9,7 +9,7 @@ public class AuthApiService : ApiServiceBase
     {
     }
 
-    public async Task<AuthData> Login(string username, string password)
+    public async Task<AuthData> LoginAsync(string username, string password)
     {
         var response = await HttpClient.PostAsJsonAsync("/login", new { Username = username, Password = password });
 

@@ -6,23 +6,47 @@ namespace CarListApp.Services.Api;
 
 public class CarApiService : ApiServiceBase
 {
+    private readonly Task _setInitialTokenTask;
+
     public CarApiService(PersistedTokenManager persistedTokenManager) : base(persistedTokenManager)
     {
+        persistedTokenManager.TokenObtained += OnTokenChanged;
+        _setInitialTokenTask = SetupTokenAsync();
     }
 
-    public Task<IEnumerable<Car>> GetCarsAsync()
+    private async Task SetupTokenAsync()
     {
-        return GetFromJsonAsync<IEnumerable<Car>>("cars");
+        var tokenData = await PersistedTokenManager.GetTokenAsync();
+        SetAccessToken(tokenData.AccessToken);
     }
 
-    public Task<Car> GetCarAsync(int id)
+    private void OnTokenChanged(object sender, AuthData e)
     {
-        return GetFromJsonAsync<Car>($"cars/{id}");
+        SetAccessToken(e.AccessToken);
+    }
+
+    private void SetAccessToken(string accessToken)
+    {
+        const string bearerHeaderName = "Bearer";
+        HttpClient.DefaultRequestHeaders.Remove(bearerHeaderName);
+        HttpClient.DefaultRequestHeaders.Add(bearerHeaderName, accessToken);
+    }
+
+    public async Task<IEnumerable<Car>> GetCarsAsync()
+    {
+        await _setInitialTokenTask;
+        return await GetFromJsonAsync<IEnumerable<Car>>("cars");
+    }
+
+    public async Task<Car> GetCarAsync(int id)
+    {
+        await _setInitialTokenTask;
+        return await GetFromJsonAsync<Car>($"cars/{id}");
     }
 
     public async Task<bool> AddCarAsync(Car car)
     {
-        await SetInitialTokenTask;
+        await _setInitialTokenTask;
 
         var response = await HttpClient.PostAsJsonAsync("cars", car);
 
@@ -40,7 +64,7 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> UpdateCarAsync(int id, Car car)
     {
-        await SetInitialTokenTask;
+        await _setInitialTokenTask;
 
         var response = await HttpClient.PutAsJsonAsync($"cars/{id}", car);
 
@@ -58,7 +82,7 @@ public class CarApiService : ApiServiceBase
 
     public async Task<bool> DeleteCarAsync(int id)
     {
-        await SetInitialTokenTask;
+        await _setInitialTokenTask;
 
         var response = await HttpClient.DeleteAsync($"cars/{id}");
 
