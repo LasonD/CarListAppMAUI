@@ -6,6 +6,7 @@ using System.Text;
 using CarListApp.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CarListApp.Services.Api;
+using CarListApp.Services;
 
 namespace CarListApp.ViewModels;
 
@@ -16,7 +17,7 @@ public partial class CarListViewModel : ViewModelBase
     private const string UpdateCarText = "Update Car";
 
     private readonly CarApiService _carApiService;
-    private readonly PersistedTokenManager _tokenManager;
+    private readonly UserInfoManager _tokenManager;
 
     [ObservableProperty] private bool _isRefreshing;
 
@@ -30,7 +31,7 @@ public partial class CarListViewModel : ViewModelBase
 
     [ObservableProperty] private string _addUpdateCarBtnText;
 
-    public CarListViewModel(CarApiService carApiService, PersistedTokenManager tokenManager)
+    public CarListViewModel(CarApiService carApiService, UserInfoManager tokenManager)
     {
         _carApiService = carApiService;
         _tokenManager = tokenManager;

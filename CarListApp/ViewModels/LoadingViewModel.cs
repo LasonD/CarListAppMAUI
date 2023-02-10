@@ -1,20 +1,20 @@
-﻿using CarListApp.Services.Api;
+﻿using CarListApp.Services;
 
 namespace CarListApp.ViewModels;
 
 public partial class LoadingViewModel : ViewModelBase
 {
-    private readonly PersistedTokenManager _persistedTokenManager;
+    private readonly UserInfoManager _userInfoManager;
 
-    public LoadingViewModel(PersistedTokenManager persistedTokenManager)
+    public LoadingViewModel(UserInfoManager userInfoManager)
     {
-        _persistedTokenManager = persistedTokenManager;
+        _userInfoManager = userInfoManager;
         CheckUserLoginDetails();
     }
 
     private async void CheckUserLoginDetails()
     {
-        var token = await _persistedTokenManager.GetTokenAsync();
+        var token = await _userInfoManager.GetAccessTokenAsync();
 
         if (token == null)
         {

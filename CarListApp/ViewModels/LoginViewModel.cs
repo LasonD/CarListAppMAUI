@@ -1,4 +1,5 @@
-﻿using CarListApp.Services.Api;
+﻿using CarListApp.Services;
+using CarListApp.Services.Api;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -7,12 +8,12 @@ namespace CarListApp.ViewModels;
 public partial class LoginViewModel : ViewModelBase
 {
     private readonly AuthApiService _authService;
-    private readonly PersistedTokenManager _tokenManager;
+    private readonly UserInfoManager _tokenManager;
 
     [ObservableProperty] private string _username;
     [ObservableProperty] private string _password;
 
-    public LoginViewModel(AuthApiService authService, PersistedTokenManager tokenManager)
+    public LoginViewModel(AuthApiService authService, UserInfoManager tokenManager)
     {
         _authService = authService;
         _tokenManager = tokenManager;
@@ -31,21 +32,15 @@ public partial class LoginViewModel : ViewModelBase
         try
         {
             var token = await _authService.LoginAsync(Username, Password);
-            await _tokenManager.SetTokenAsync(token);
+            await _tokenManager.SetAuthDataAsync(token);
 
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)
         {
             await DisplayLoginErrorAsync(ex.Message);
-            ClearForm();
+            Password = null;
         }
-    }
-
-    private void ClearForm()
-    {
-        Username = null;
-        Password = null;
     }
 
     private async Task DisplayLoginErrorAsync(string message = null)

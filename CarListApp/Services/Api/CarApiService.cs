@@ -7,20 +7,20 @@ namespace CarListApp.Services.Api;
 
 public class CarApiService : ApiServiceBase
 {
-    private readonly PersistedTokenManager _persistedTokenManager;
+    private readonly UserInfoManager _userInfoManager;
     private readonly Task _setInitialTokenTask;
 
-    public CarApiService(PersistedTokenManager persistedTokenManager)
+    public CarApiService(UserInfoManager userInfoManager)
     {
-        _persistedTokenManager = persistedTokenManager;
-        persistedTokenManager.TokenObtained += OnTokenChanged;
+        _userInfoManager = userInfoManager;
+        userInfoManager.TokenObtained += OnTokenChanged;
         _setInitialTokenTask = SetupTokenAsync();
     }
 
     private async Task SetupTokenAsync()
     {
-        var tokenData = await _persistedTokenManager.GetTokenAsync();
-        SetAccessToken(tokenData.AccessToken);
+        var accessToken = await _userInfoManager.GetAccessTokenAsync();
+        SetAccessToken(accessToken);
     }
 
     private void OnTokenChanged(object sender, AuthData e)
