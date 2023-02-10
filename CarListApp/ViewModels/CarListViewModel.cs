@@ -5,17 +5,18 @@ using System.Diagnostics;
 using System.Text;
 using CarListApp.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CarListApp.Services;
 using CarListApp.Services.Api;
 
 namespace CarListApp.ViewModels;
 
 public partial class CarListViewModel : ViewModelBase
 {
-    private readonly CarApiService _carApiService;
     private const string CarListTitle = "Car list";
     private const string AddCarText = "Add Car";
     private const string UpdateCarText = "Update Car";
+
+    private readonly CarApiService _carApiService;
+    private readonly PersistedTokenManager _tokenManager;
 
     [ObservableProperty] private bool _isRefreshing;
 
@@ -29,9 +30,10 @@ public partial class CarListViewModel : ViewModelBase
 
     [ObservableProperty] private string _addUpdateCarBtnText;
 
-    public CarListViewModel(CarApiService carApiService)
+    public CarListViewModel(CarApiService carApiService, PersistedTokenManager tokenManager)
     {
         _carApiService = carApiService;
+        _tokenManager = tokenManager;
         Title = CarListTitle;
         AddUpdateCarBtnText = AddCarText;
     }

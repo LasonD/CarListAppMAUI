@@ -32,10 +32,12 @@ public partial class LoginViewModel : ViewModelBase
         {
             var token = await _authService.LoginAsync(Username, Password);
             await _tokenManager.SetTokenAsync(token);
+
+            await Shell.Current.GoToAsync("..");
         }
-        catch
+        catch (Exception ex)
         {
-            await DisplayLoginErrorAsync();
+            await DisplayLoginErrorAsync(ex.Message);
             ClearForm();
         }
     }
@@ -46,8 +48,10 @@ public partial class LoginViewModel : ViewModelBase
         Password = null;
     }
 
-    private async Task DisplayLoginErrorAsync()
+    private async Task DisplayLoginErrorAsync(string message = null)
     {
-        await Shell.Current.DisplayAlert("Error", "Invalid username or password! Try again.", "Close");
+        message = string.IsNullOrWhiteSpace(message) ? "Invalid username or password! Try again." : $"Something went wrong: {message}";
+
+        await Shell.Current.DisplayAlert("Error", message, "Close");
     }
 }

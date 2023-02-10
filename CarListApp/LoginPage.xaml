@@ -15,14 +15,14 @@
             <Label Text="Login to your account" FontSize="18" TextColor="Gray" HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
 
-        <StackLayout Orientation="Horizontal">
-            <Entry x:Name="Username" Placeholder="Enter username" Text="{Binding Username}"/>
+        <StackLayout Orientation="Vertical">
+            <Entry x:Name="Username" Placeholder="Enter username" HorizontalTextAlignment="Center" Text="{Binding Username}"/>
         </StackLayout>
 
-        <StackLayout Orientation="Horizontal">
-            <Entry x:Name="Password" Placeholder="Enter password" Text="{Binding Password}" IsPassword="true"/>
+        <StackLayout Orientation="Vertical">
+            <Entry x:Name="Password" Placeholder="Enter password" HorizontalTextAlignment="Center" Text="{Binding Password}" IsPassword="true"/>
         </StackLayout>
 
-        <Button Text="Sign In" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding LoginCommand}"/>
+        <Button Text="Sign In" WidthRequest="100" CornerRadius="20" Margin="50" HorizontalOptions="Center" Command="{Binding LoginCommand}"/>
     </VerticalStackLayout>
 </ContentPage>

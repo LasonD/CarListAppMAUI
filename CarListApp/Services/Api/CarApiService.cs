@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using CarListApp.Models;
 
@@ -30,8 +31,7 @@ public class CarApiService : ApiServiceBase
     private void SetAccessToken(string accessToken)
     {
         const string bearerHeaderName = "Bearer";
-        HttpClient.DefaultRequestHeaders.Remove(bearerHeaderName);
-        HttpClient.DefaultRequestHeaders.Add(bearerHeaderName, accessToken);
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(bearerHeaderName, accessToken);
     }
 
     public async Task<IEnumerable<Car>> GetCarsAsync()

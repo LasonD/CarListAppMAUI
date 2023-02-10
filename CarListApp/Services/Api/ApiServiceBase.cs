@@ -4,7 +4,7 @@ namespace CarListApp.Services.Api
 {
     public abstract class ApiServiceBase
     {
-        public static string BaseAddress = "https://car-list-api.onrender.com/";
+        public static string BaseAddress = "https://carlistapp-sbarylo20023.b4a.run/";
 
         protected readonly HttpClient HttpClient;
 

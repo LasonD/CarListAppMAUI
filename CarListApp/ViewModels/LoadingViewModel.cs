@@ -22,8 +22,6 @@ public partial class LoadingViewModel : ViewModelBase
             return;
         }
 
-        // todo: check token
-
         await Shell.Current.GoToAsync(nameof(MainPage));
     }
 }
