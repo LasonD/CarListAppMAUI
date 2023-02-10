@@ -34,7 +34,7 @@ public partial class LoginViewModel : ViewModelBase
             var token = await _authService.LoginAsync(Username, Password);
             await _tokenManager.SetAuthDataAsync(token);
 
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync($"{nameof(MainPage)}");
         }
         catch (Exception ex)
         {
