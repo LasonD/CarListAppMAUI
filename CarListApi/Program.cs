@@ -178,6 +178,13 @@ app.MapPost("/login", async (LoginDto loginDto, UserManager<IdentityUser> userMa
     return Results.Ok(response);
 }).AllowAnonymous();
 
+var bogdanVisitsCount = 0;
+
+app.MapGet("bogdan/endpoint/", () =>
+{
+    return Results.Content($"<h1>Богдан Сидоренко Русланович відвідав цю сторінку {bogdanVisitsCount++} {(bogdanVisitsCount == 1 ? "раз" : "разів")}<h1>", "text/html", Encoding.Unicode);
+}).AllowAnonymous();
+
 app.Run();
 
 public class LoginDto
